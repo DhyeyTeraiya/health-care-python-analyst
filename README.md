@@ -189,7 +189,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Project Maintainer**: Dhyey Teraiya
 - 🐙 GitHub: [@DhyeyTeraiya](https://github.com/DhyeyTeraiya)
-- 📧 Email: dhyey.teraiya@example.com
+- 📧 Email: dhyey.teraiya@gmail.com
 - 💼 LinkedIn: [Dhyey Teraiya](https://linkedin.com/in/dhyey-teraiya)
 
 ## 🔮 Roadmap & Future Enhancements
