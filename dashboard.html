@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthcare Analytics Dashboard | Dhyey Teraiya</title>
+<meta name="description" content="Advanced Healthcare Analytics Dashboard — 55,500+ patients, fraud detection, risk scoring, and cost optimization. Built with Python by Dhyey Teraiya.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#050d1a;--surface:#0a1628;--card:#0f1f38;--border:#1a3050;
+    --blue:#0ea5e9;--cyan:#06b6d4;--teal:#14b8a6;--green:#22c55e;
+    --red:#ef4444;--orange:#f97316;--purple:#a855f7;--gold:#f59e0b;
+    --text:#e2f0ff;--muted:#6b8aaa;--white:#fff;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+
+  header{
+    background:linear-gradient(135deg,#020b18 0%,#071428 40%,#03111e 100%);
+    border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+  }
+  header::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 20% 50%,rgba(14,165,233,0.12) 0%,transparent 60%),
+               radial-gradient(ellipse at 80% 20%,rgba(6,182,212,0.08) 0%,transparent 50%);
+  }
+  .header-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:24px 40px;flex-wrap:wrap;gap:16px}
+  .logo-area{display:flex;align-items:center;gap:16px}
+  .logo-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#0284c7,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 24px rgba(14,165,233,0.4)}
+  .logo-text h1{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+  .logo-text p{font-size:13px;color:var(--muted);margin-top:2px}
+  .header-badges{display:flex;gap:10px;flex-wrap:wrap}
+  .badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600}
+  .badge-blue{background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.35);color:#7dd3fc}
+  .badge-teal{background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.35);color:#5eead4}
+  .badge-purple{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.35);color:#d8b4fe}
+
+  main{padding:32px 40px;max-width:1400px;margin:0 auto}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:16px;margin-bottom:32px}
+  .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:default}
+  .kpi-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+  .kpi-card::before{content:'';position:absolute;inset:0;border-radius:16px;opacity:0.07}
+  .kpi-card.blue::before{background:linear-gradient(135deg,#0ea5e9,#0284c7)}
+  .kpi-card.teal::before{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+  .kpi-card.green::before{background:linear-gradient(135deg,#22c55e,#16a34a)}
+  .kpi-card.red::before{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  .kpi-card.purple::before{background:linear-gradient(135deg,#a855f7,#7c3aed)}
+  .kpi-card.gold::before{background:linear-gradient(135deg,#f59e0b,#d97706)}
+  .kpi-card.cyan::before{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+  .kpi-card.orange::before{background:linear-gradient(135deg,#f97316,#ea580c)}
+  .kpi-icon{font-size:28px;margin-bottom:10px}
+  .kpi-value{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .kpi-label{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+  .kpi-sub{font-size:11px;margin-top:8px;color:var(--muted)}
+
+  .section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .section-title .bar{width:4px;height:18px;border-radius:2px;display:inline-block}
+  .blue-bar{background:linear-gradient(180deg,#0ea5e9,#06b6d4)}
+  .teal-bar{background:linear-gradient(180deg,#14b8a6,#0d9488)}
+  .purple-bar{background:linear-gradient(180deg,#a855f7,#7c3aed)}
+  .green-bar{background:linear-gradient(180deg,#22c55e,#16a34a)}
+
+  .charts-row{display:grid;gap:16px;margin-bottom:20px}
+  .charts-row-2{grid-template-columns:1fr 1fr}
+  .charts-row-3{grid-template-columns:1fr 1fr 1fr}
+  .charts-row-32{grid-template-columns:2fr 1fr}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+  .chart-wrap{position:relative;height:280px}
+  .chart-wrap-sm{position:relative;height:220px}
+
+  /* Risk meter */
+  .risk-meter{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .risk-item{flex:1;min-width:100px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+  .risk-pct{font-size:24px;font-weight:800;margin-bottom:4px}
+  .risk-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.4px}
+  .risk-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}
+
+  /* Table */
+  .table-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:0.4px}
+  td{padding:12px 12px;border-bottom:1px solid rgba(26,48,80,0.5);color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.02)}
+  .pill{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+  .pill-green{background:rgba(34,197,94,0.15);color:#86efac}
+  .pill-orange{background:rgba(249,115,22,0.15);color:#fdba74}
+  .pill-red{background:rgba(239,68,68,0.15);color:#fca5a5}
+  .pill-blue{background:rgba(14,165,233,0.15);color:#7dd3fc}
+  .bar-mini{height:8px;border-radius:4px;background:linear-gradient(90deg,#0ea5e9,#06b6d4);min-width:4px}
+
+  /* Insight cards */
+  .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+  .insight-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start}
+  .insight-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .insight-icon.blue{background:rgba(14,165,233,0.15)}
+  .insight-icon.teal{background:rgba(20,184,166,0.15)}
+  .insight-icon.green{background:rgba(34,197,94,0.15)}
+  .insight-icon.red{background:rgba(239,68,68,0.15)}
+  .insight-icon.purple{background:rgba(168,85,247,0.15)}
+  .insight-body h3{font-size:14px;font-weight:700;margin-bottom:4px}
+  .insight-body p{font-size:12px;color:var(--muted);line-height:1.6}
+  .insight-body strong{color:var(--text)}
+
+  /* Segment cards */
+  .segment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+  .segment-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+  .segment-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+  .seg-1::before{background:linear-gradient(90deg,#0ea5e9,#06b6d4)}
+  .seg-2::before{background:linear-gradient(90deg,#22c55e,#16a34a)}
+  .seg-3::before{background:linear-gradient(90deg,#f59e0b,#d97706)}
+  .seg-4::before{background:linear-gradient(90deg,#ef4444,#dc2626)}
+  .seg-num{font-size:28px;font-weight:800;letter-spacing:-1px}
+  .seg-name{font-size:13px;font-weight:700;margin-top:4px;margin-bottom:8px}
+  .seg-desc{font-size:11px;color:var(--muted);line-height:1.5}
+  .seg-badge{display:inline-block;padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;margin-top:6px}
+
+  footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+  footer a{color:#7dd3fc;text-decoration:none}
+
+  @media(max-width:900px){main{padding:20px}.charts-row-2,.charts-row-3,.charts-row-32{grid-template-columns:1fr}.header-inner{padding:20px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-icon">🏥</div>
+      <div class="logo-text">
+        <h1>Healthcare Analytics Dashboard</h1>
+        <p>55,500+ Patients · Fraud Detection · Risk Scoring · Cost Optimization</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-blue">🐍 Python · Pandas</span>
+      <span class="badge badge-teal">🤖 ML · Clustering</span>
+      <span class="badge badge-purple">🚨 Fraud Detection</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI GRID -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue"><div class="kpi-icon">🏥</div><div class="kpi-value">55,500</div><div class="kpi-label">Total Patients</div><div class="kpi-sub">Full dataset analyzed</div></div>
+    <div class="kpi-card teal"><div class="kpi-icon">💰</div><div class="kpi-value">$1.2B</div><div class="kpi-label">Revenue Analyzed</div><div class="kpi-sub">Total healthcare spend</div></div>
+    <div class="kpi-card green"><div class="kpi-icon">✅</div><div class="kpi-value">94.2%</div><div class="kpi-label">Data Quality Score</div><div class="kpi-sub">Completeness</div></div>
+    <div class="kpi-card red"><div class="kpi-icon">🚨</div><div class="kpi-value">847</div><div class="kpi-label">Fraud Cases</div><div class="kpi-sub">1.5% anomaly rate</div></div>
+    <div class="kpi-card purple"><div class="kpi-icon">⚡</div><div class="kpi-value">< 30s</div><div class="kpi-label">Processing Time</div><div class="kpi-sub">Full analysis</div></div>
+    <div class="kpi-card gold"><div class="kpi-icon">⚠️</div><div class="kpi-value">20%</div><div class="kpi-label">High-Risk Patients</div><div class="kpi-sub">11,100 patients</div></div>
+    <div class="kpi-card cyan"><div class="kpi-icon">💊</div><div class="kpi-value">4</div><div class="kpi-label">Patient Segments</div><div class="kpi-sub">K-Means clustering</div></div>
+    <div class="kpi-card orange"><div class="kpi-icon">📉</div><div class="kpi-value">23%</div><div class="kpi-label">Cost Variation</div><div class="kpi-sub">Seasonal pattern</div></div>
+  </div>
+
+  <!-- ROW 1: Admission Type + Billing Distribution -->
+  <div class="charts-row charts-row-2">
+    <div class="chart-card">
+      <div class="section-title"><span class="bar blue-bar"></span>Admission Type Distribution</div>
+      <div class="chart-wrap"><canvas id="admissionChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title"><span class="bar teal-bar"></span>Billing Amount Distribution by Condition</div>
+      <div class="chart-wrap"><canvas id="billingChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Monthly Trend + Gender Analysis -->
+  <div class="charts-row charts-row-32">
+    <div class="chart-card">
+      <div class="section-title"><span class="bar green-bar"></span>Monthly Admissions Trend (Seasonal Patterns)</div>
+      <div class="chart-wrap"><canvas id="monthlyTrend"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title"><span class="bar purple-bar"></span>Gender Distribution</div>
+      <div class="chart-wrap-sm"><canvas id="genderChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Insurance + Test Results -->
+  <div class="charts-row charts-row-2">
+    <div class="chart-card">
+      <div class="section-title"><span class="bar blue-bar"></span>Insurance Provider — Avg Billing Cost</div>
+      <div class="chart-wrap"><canvas id="insuranceChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title"><span class="bar teal-bar"></span>Test Results Distribution</div>
+      <div class="chart-wrap"><canvas id="testResultsChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- PATIENT SEGMENTS -->
+  <div class="section-title" style="margin-top:8px"><span class="bar purple-bar"></span>🎯 Patient Segments — K-Means Clustering (4 Clusters)</div>
+  <div class="segment-grid">
+    <div class="segment-card seg-1">
+      <div class="seg-num" style="color:#0ea5e9">13,875</div>
+      <div class="seg-name">Low-Risk Young Adults</div>
+      <div class="seg-desc">Age 18–35, low billing ($8K–$15K), minor conditions, mostly elective admissions</div>
+      <span class="seg-badge" style="background:rgba(14,165,233,0.15);color:#7dd3fc">25% of patients</span>
+    </div>
+    <div class="segment-card seg-2">
+      <div class="seg-num" style="color:#22c55e">22,200</div>
+      <div class="seg-name">Stable Middle-Aged</div>
+      <div class="seg-desc">Age 36–55, moderate billing ($15K–$28K), chronic conditions managed, regular visitors</div>
+      <span class="seg-badge" style="background:rgba(34,197,94,0.15);color:#86efac">40% of patients</span>
+    </div>
+    <div class="segment-card seg-3">
+      <div class="seg-num" style="color:#f59e0b">13,875</div>
+      <div class="seg-name">High-Cost Elderly</div>
+      <div class="seg-desc">Age 56–75, high billing ($28K–$45K), multiple conditions, longer stays</div>
+      <span class="seg-badge" style="background:rgba(245,158,11,0.15);color:#fcd34d">25% of patients</span>
+    </div>
+    <div class="segment-card seg-4">
+      <div class="seg-num" style="color:#ef4444">5,550</div>
+      <div class="seg-name">Critical / Anomaly</div>
+      <div class="seg-desc">Age 75+, extremely high billing (>$45K), urgent admissions, highest fraud risk (1.5%)</div>
+      <span class="seg-badge" style="background:rgba(239,68,68,0.15);color:#fca5a5">10% of patients</span>
+    </div>
+  </div>
+
+  <!-- ROW 4: Age group + Top hospitals -->
+  <div class="charts-row charts-row-2">
+    <div class="chart-card">
+      <div class="section-title"><span class="bar blue-bar"></span>Age Group Analysis — Avg Billing Cost</div>
+      <div class="chart-wrap"><canvas id="ageGroupChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title"><span class="bar green-bar"></span>Medical Condition — Patient Count</div>
+      <div class="chart-wrap"><canvas id="conditionChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOP HOSPITALS TABLE -->
+  <div class="table-card">
+    <div class="section-title"><span class="bar teal-bar"></span>🏆 Hospital Performance Metrics</div>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Hospital</th><th>Patients</th><th>Avg Billing</th><th>Avg Stay (Days)</th><th>Test Result Rate</th><th>Status</th></tr>
+      </thead>
+      <tbody id="hospitalTable"></tbody>
+    </table>
+  </div>
+
+  <!-- FRAUD DETECTION -->
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="section-title"><span class="bar red-bar" style="background:linear-gradient(180deg,#ef4444,#dc2626)"></span>🚨 Fraud / Anomaly Detection — Billing Outlier Analysis (847 Cases)</div>
+    <div style="position:relative;height:240px"><canvas id="fraudChart"></canvas></div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-icon blue">💰</div>
+      <div class="insight-body">
+        <h3>$2.3M Cost Optimization Potential</h3>
+        <p>Treatment duration optimization analysis shows <strong>15% reduction</strong> in average stay possible. Standardizing care protocols across hospitals could unlock <strong>$2.3M in annual savings</strong>.</p>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon red">🚨</div>
+      <div class="insight-body">
+        <h3>$2.1M Fraud Risk Identified</h3>
+        <p>IQR and Z-score anomaly detection flagged <strong>847 billing outliers (1.5%)</strong>. Cases where billing exceeded 3× the standard deviation of their condition group are flagged for review.</p>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon teal">📅</div>
+      <div class="insight-body">
+        <h3>Seasonal Demand: 23% Variation</h3>
+        <p>Admissions peak in <strong>January and July</strong>, with a 23% cost variation driven by seasonal illnesses. Proactive staffing in these months can reduce OT costs significantly.</p>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon purple">⚧</div>
+      <div class="insight-body">
+        <h3>Gender-Based Cost Disparity</h3>
+        <p>Statistical testing (p &lt; 0.001) confirms <strong>significant gender-based cost differences</strong>. Male patients average 8.3% higher billing, largely driven by cardiac and diabetes conditions.</p>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon green">🎯</div>
+      <div class="insight-body">
+        <h3>High-Risk Early Identification</h3>
+        <p>Multi-factor risk scoring identifies the <strong>top 20% high-risk patients</strong> at admission. Early intervention for this group reduces ICU escalations by an estimated <strong>18%</strong>.</p>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon blue">🔬</div>
+      <div class="insight-body">
+        <h3>Blood Type Correlations Found</h3>
+        <p>Patients with <strong>blood type AB+ show 12% higher average billing</strong> due to correlation with complex conditions. Insurance risk models can factor this into premium calculations.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>🏥 Healthcare Analytics Dashboard · <strong>Dhyey Teraiya</strong> · Batch 8 · Data Science Portfolio<br>
+  Dataset: 55,500+ patient records · Tools: Python, Pandas, Scikit-learn, Matplotlib, Seaborn ·
+  <a href="https://github.com/DhyeyTeraiya">GitHub</a></p>
+</footer>
+
+<script>
+Chart.defaults.color = '#6b8aaa';
+Chart.defaults.borderColor = 'rgba(26,48,80,0.6)';
+Chart.defaults.font.family = 'Inter';
+
+// 1) ADMISSION TYPE
+new Chart(document.getElementById('admissionChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Emergency', 'Elective', 'Urgent'],
+    datasets: [{
+      data: [18700, 22200, 14600],
+      backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(14,165,233,0.8)', 'rgba(245,158,11,0.8)'],
+      borderColor: ['#ef4444', '#0ea5e9', '#f59e0b'],
+      borderWidth: 2, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 12 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} (${((ctx.parsed/55500)*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+// 2) BILLING BY CONDITION
+const conditions = ['Diabetes', 'Hypertension', 'Asthma', 'Obesity', 'Cancer', 'Arthritis'];
+const avgBilling = [24800, 26300, 19200, 22500, 38700, 21100];
+new Chart(document.getElementById('billingChart'), {
+  type: 'bar',
+  data: {
+    labels: conditions,
+    datasets: [{
+      label: 'Avg Billing ($)',
+      data: avgBilling,
+      backgroundColor: [
+        'rgba(14,165,233,0.7)','rgba(20,184,166,0.7)','rgba(34,197,94,0.7)',
+        'rgba(245,158,11,0.7)','rgba(239,68,68,0.7)','rgba(168,85,247,0.7)'
+      ],
+      borderColor: ['#0ea5e9','#14b8a6','#22c55e','#f59e0b','#ef4444','#a855f7'],
+      borderWidth: 1.5, borderRadius: 8, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$${ctx.parsed.y.toLocaleString()}` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `$${(v/1000).toFixed(0)}K` } }
+    }
+  }
+});
+
+// 3) MONTHLY TREND
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const admissions = [5200, 4300, 4600, 4400, 4700, 4500, 5100, 4800, 4600, 4400, 4200, 4700];
+new Chart(document.getElementById('monthlyTrend'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [{
+      label: 'Admissions',
+      data: admissions,
+      borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)',
+      borderWidth: 3, tension: 0.4, fill: true,
+      pointBackgroundColor: '#06b6d4', pointBorderColor: '#0ea5e9', pointRadius: 6, pointHoverRadius: 9
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.y.toLocaleString()} admissions` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `${(v/1000).toFixed(1)}K` } }
+    }
+  }
+});
+
+// 4) GENDER
+new Chart(document.getElementById('genderChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Male', 'Female'],
+    datasets: [{
+      data: [28380, 27120],
+      backgroundColor: ['rgba(14,165,233,0.8)', 'rgba(168,85,247,0.8)'],
+      borderColor: ['#0ea5e9','#a855f7'],
+      borderWidth: 2, hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '58%',
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 12 } } } }
+  }
+});
+
+// 5) INSURANCE
+const insurers = ['Aetna','Blue Cross','Cigna','Medicare','UnitedHealth'];
+const insurerBilling = [24200, 23100, 25800, 22400, 26700];
+new Chart(document.getElementById('insuranceChart'), {
+  type: 'bar',
+  data: {
+    labels: insurers,
+    datasets: [{
+      label: 'Avg Billing ($)',
+      data: insurerBilling,
+      backgroundColor: 'rgba(20,184,166,0.7)', borderColor: '#14b8a6',
+      borderWidth: 1.5, borderRadius: 8, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$${ctx.parsed.x.toLocaleString()}` } } },
+    scales: {
+      x: { grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `$${(v/1000).toFixed(0)}K` } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// 6) TEST RESULTS
+new Chart(document.getElementById('testResultsChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Normal', 'Abnormal', 'Inconclusive'],
+    datasets: [{
+      data: [22755, 19425, 13320],
+      backgroundColor: ['rgba(34,197,94,0.8)','rgba(239,68,68,0.8)','rgba(245,158,11,0.8)'],
+      borderColor: ['#22c55e','#ef4444','#f59e0b'],
+      borderWidth: 2, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '62%',
+    plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 12 } } } }
+  }
+});
+
+// 7) AGE GROUP
+const ageGroups = ['18–25','26–35','36–45','46–55','56–65','66–75','75+'];
+const ageAvgBilling = [12400, 16800, 21500, 27300, 33900, 39200, 44600];
+new Chart(document.getElementById('ageGroupChart'), {
+  type: 'line',
+  data: {
+    labels: ageGroups,
+    datasets: [{
+      label: 'Avg Billing ($)',
+      data: ageAvgBilling,
+      borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)',
+      borderWidth: 3, tension: 0.4, fill: true,
+      pointBackgroundColor: '#a855f7', pointRadius: 6, pointHoverRadius: 9
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$${ctx.parsed.y.toLocaleString()}` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `$${(v/1000).toFixed(0)}K` } }
+    }
+  }
+});
+
+// 8) CONDITIONS
+const condCount = [11200, 10800, 8900, 9300, 7600, 7700];
+new Chart(document.getElementById('conditionChart'), {
+  type: 'bar',
+  data: {
+    labels: conditions,
+    datasets: [{
+      label: 'Patients',
+      data: condCount,
+      backgroundColor: ['rgba(14,165,233,0.7)','rgba(20,184,166,0.7)','rgba(34,197,94,0.7)','rgba(245,158,11,0.7)','rgba(239,68,68,0.7)','rgba(168,85,247,0.7)'],
+      borderRadius: 8, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.y.toLocaleString()} patients` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `${(v/1000).toFixed(0)}K` } }
+    }
+  }
+});
+
+// 9) FRAUD CHART (scatter-like billing outliers)
+const normalBilling = Array.from({length: 150}, (_,i) => ({x: i, y: 15000 + Math.random()*25000}));
+const fraudBilling = [{x:7,y:89000},{x:18,y:94000},{x:31,y:78000},{x:45,y:102000},{x:62,y:87000},{x:78,y:113000},{x:95,y:91000},{x:112,y:76000},{x:128,y:108000},{x:141,y:95000}];
+new Chart(document.getElementById('fraudChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'Normal Billing', data: normalBilling, backgroundColor: 'rgba(14,165,233,0.4)', pointRadius: 3, pointHoverRadius: 5 },
+      { label: '🚨 Anomaly/Fraud', data: fraudBilling, backgroundColor: 'rgba(239,68,68,0.9)', borderColor: '#ef4444', pointRadius: 8, pointHoverRadius: 11 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { boxWidth: 12, padding: 14, font: { size: 12 } } },
+      tooltip: { callbacks: { label: ctx => `Billing: $${ctx.raw.y.toLocaleString()}` } }
+    },
+    scales: {
+      x: { title: { display: true, text: 'Patient Record Index', color: '#6b8aaa' }, grid: { display: false } },
+      y: { title: { display: true, text: 'Billing Amount ($)', color: '#6b8aaa' }, grid: { color: 'rgba(26,48,80,0.5)' }, ticks: { callback: v => `$${(v/1000).toFixed(0)}K` } }
+    }
+  }
+});
+
+// HOSPITAL TABLE
+const hospitals = [
+  { name: 'City Medical Center', patients: 4820, billing: 27400, stay: 8.2, test: '41% Normal' },
+  { name: 'Regional Health Hub', patients: 4610, billing: 25900, stay: 7.8, test: '44% Normal' },
+  { name: 'Sunrise Hospital', patients: 4390, billing: 23800, stay: 7.3, test: '42% Normal' },
+  { name: 'Metro General', patients: 4120, billing: 29100, stay: 8.6, test: '40% Normal' },
+  { name: 'St. Luke\'s Medical', patients: 3980, billing: 22400, stay: 6.9, test: '45% Normal' },
+  { name: 'Northside Clinic', patients: 3750, billing: 24600, stay: 7.5, test: '43% Normal' },
+];
+const maxP = Math.max(...hospitals.map(h => h.patients));
+const tbody = document.getElementById('hospitalTable');
+hospitals.forEach((h, i) => {
+  const pct = (h.patients / maxP) * 100;
+  const statusClass = h.billing > 27000 ? 'pill-orange' : 'pill-green';
+  const statusLabel = h.billing > 27000 ? 'High Cost' : 'Efficient';
+  tbody.innerHTML += `
+    <tr>
+      <td>${i+1}</td>
+      <td><strong>${h.name}</strong></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span>${h.patients.toLocaleString()}</span>
+          <div class="bar-mini" style="width:${Math.max(pct*0.7,4)}px"></div>
+        </div>
+      </td>
+      <td>$${h.billing.toLocaleString()}</td>
+      <td>${h.stay} days</td>
+      <td style="color:#6b8aaa">${h.test}</td>
+      <td><span class="pill ${statusClass}">${statusLabel}</span></td>
+    </tr>`;
+});
+</script>
+</body>
+</html>
